@@ -1,0 +1,47 @@
+{
+  "name": "@ungap/babel-plugin-transform-hinted-jsx",
+  "version": "0.0.0",
+  "main": "./cjs/index.js",
+  "scripts": {
+    "build": "npm run cjs && npm run test",
+    "cjs": "ascjs --no-default esm cjs",
+    "test": "babel test/input.jsx -o test/output.js"
+  },
+  "keywords": [
+    "JSX",
+    "performance",
+    "hints"
+  ],
+  "author": "Andrea Giammarchi",
+  "license": "ISC",
+  "module": "./esm/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@babel/plugin-transform-react-jsx": "^7.19.0",
+    "ascjs": "^5.0.1"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ungap/plugin-transform-static-jsx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ungap/plugin-transform-static-jsx/issues"
+  },
+  "homepage": "https://github.com/ungap/plugin-transform-static-jsx#readme",
+  "description": "",
+  "dependencies": {
+    "html-escaper": "^3.0.3"
+  }
+}
