@@ -10,7 +10,8 @@
   "keywords": [
     "JSX",
     "performance",
-    "hints"
+    "hints",
+    "interpolations"
   ],
   "author": "Andrea Giammarchi",
   "license": "ISC",
@@ -29,19 +30,13 @@
     "@babel/plugin-transform-react-jsx": "^7.19.0",
     "ascjs": "^5.0.1"
   },
-  "directories": {
-    "test": "test"
-  },
+  "description": "A JSX transformer with extra hints around interpolations and outer templates",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ungap/plugin-transform-static-jsx.git"
+    "url": "git+https://github.com/ungap/babel-plugin-transform-hinted-jsx.git"
   },
   "bugs": {
-    "url": "https://github.com/ungap/plugin-transform-static-jsx/issues"
+    "url": "https://github.com/ungap/babel-plugin-transform-hinted-jsx/issues"
   },
-  "homepage": "https://github.com/ungap/plugin-transform-static-jsx#readme",
-  "description": "",
-  "dependencies": {
-    "html-escaper": "^3.0.3"
-  }
+  "homepage": "https://github.com/ungap/babel-plugin-transform-hinted-jsx#readme"
 }
