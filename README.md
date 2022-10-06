@@ -1,6 +1,6 @@
 # @ungap/babel-plugin-transform-hinted-jsx
 
-This plugin is [a follow up of this post](https://webreflection.medium.com/jsx-is-inefficient-by-default-but-d1122c992399) and it can be used together with [@babel/plugin-transform-react-jsx](https://www.npmjs.com/package/@babel/plugin-transform-react-jsx).
+This plugin is [a follow up of this post](https://webreflection.medium.com/jsx-is-inefficient-by-default-but-d1122c992399) and it can be used in place of [@babel/plugin-transform-react-jsx](https://www.npmjs.com/package/@babel/plugin-transform-react-jsx).
 
 A huge thanks to [Nicolò Ribaudo](https://twitter.com/NicoloRibaudo) for helping out.
 
@@ -9,7 +9,6 @@ A huge thanks to [Nicolò Ribaudo](https://twitter.com/NicoloRibaudo) for helpin
 ```json
 {
   "plugins": [
-    ["@babel/plugin-transform-react-jsx", {"useSpread": true}],
     ["@ungap/babel-plugin-transform-hinted-jsx"]
   ]
 }
@@ -20,7 +19,6 @@ A huge thanks to [Nicolò Ribaudo](https://twitter.com/NicoloRibaudo) for helpin
 ```sh
 npm i --save-dev @babel/cli
 npm i --save-dev @babel/core
-npm i --save-dev @babel/plugin-transform-react-jsx
 npm i --save-dev @ungap/plugin-transform-hinted-jsx
 ```
 

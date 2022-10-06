@@ -24,10 +24,15 @@
     },
     "./package.json": "./package.json"
   },
+  "dependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.19.0"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.0.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.19.3",
     "@babel/core": "^7.19.3",
-    "@babel/plugin-transform-react-jsx": "^7.19.0",
     "ascjs": "^5.0.1"
   },
   "description": "A JSX transformer with extra hints around interpolations and outer templates",
