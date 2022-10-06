@@ -33,7 +33,33 @@ export default ({types: t}) => {
       },
       FunctionDeclaration(path) {
         if (path.node.id.name === '_extends' && path.parentPath.type === 'Program') {
-          console.log('\x1b[1mTODO\x1b[0m: change the default _extends');
+          console.warn(
+            '\x1b[1mWARNING\x1b[0m: _extends override is not supported.\n',
+            '        Use `{"useSpread": true}` option.'
+          );
+        }
+      },
+      SpreadElement(path) {
+        const {parentPath} = path.parentPath;
+        if (parentPath && parentPath.isCallExpression()) {
+          const name = getCalleeName(parentPath.node.callee);
+          if (
+            name === pragma ||
+            name === (pragma || 'React.createElement')
+          ) {
+            const {callee} = path.parentPath.node;
+            if (callee && getCalleeName(callee) === interpolation())
+              return;
+            path.parentPath.replaceWith(
+              t.inherits(
+                t.callExpression(
+                  toMemberExpression(interpolation()),
+                  [path.parentPath.node]
+                ),
+                path.parentPath
+              )
+            );
+          }
         }
       },
       JSXExpressionContainer(path) {
@@ -164,6 +190,10 @@ export default ({types: t}) => {
       return t.stringLiteral(`${node.namespace.name}:${node.name.name}`);
 
     return node;
+  }
+
+  function getCalleeName({object, property, name}) {
+    return name || [object.name, property.name].join('.');
   }
 
   function getTag(openingPath) {

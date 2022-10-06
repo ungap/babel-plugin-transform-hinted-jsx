@@ -6,10 +6,10 @@ A huge thanks to [Nicolò Ribaudo](https://twitter.com/NicoloRibaudo) for helpin
 
 ### babel.config.json
 
-```js
+```json
 {
   "plugins": [
-    ["@babel/plugin-transform-react-jsx"],
+    ["@babel/plugin-transform-react-jsx", {"useSpread": true}],
     ["@ungap/babel-plugin-transform-hinted-jsx"]
   ]
 }
