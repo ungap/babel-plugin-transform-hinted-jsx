@@ -13,6 +13,21 @@ module.exports = ({types: t}) => {
     );
   };
 
+  const fixSkippedJSXExpressionContainer = ({node: {children}}) => {
+    for (const node of children) {
+      if (node.type === 'JSXExpressionContainer')
+        JSXExpressionContainer({node});
+    }
+  };
+
+  function JSXExpressionContainer(path) {
+    const {expression} = path.node;
+    path.node.expression = t.callExpression(
+      toMemberExpression(interpolation()),
+      [expression]
+    );
+  }
+
   return {
     visitor: {
       Program: {
@@ -63,15 +78,10 @@ module.exports = ({types: t}) => {
           }
         }
       },
-      JSXExpressionContainer(path) {
-        const {expression} = path.node;
-        path.node.expression = t.callExpression(
-          toMemberExpression(interpolation()),
-          [expression]
-        );
-      },
+      JSXExpressionContainer,
       JSXElement(path) {
         if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
+          fixSkippedJSXExpressionContainer(path);
           const openingPath = path.get('openingElement');
           const attributes = openingPath.get('attributes');
           const callExpr = t.callExpression(
@@ -89,6 +99,7 @@ module.exports = ({types: t}) => {
       },
       JSXFragment(path) {
         if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
+          fixSkippedJSXExpressionContainer(path);
           const callExpr = t.callExpression(
             toMemberExpression((pragma || 'React.createElement') + '``'),
             [
