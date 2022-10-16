@@ -1,6 +1,6 @@
 {
   "plugins": [
-    ["./esm/index.js"],
-    ["@babel/plugin-transform-react-jsx", {"useSpread": true}]
+    ["@babel/plugin-transform-react-jsx", {"useSpread": true}],
+    ["./esm/index.js"]
   ]
 }
