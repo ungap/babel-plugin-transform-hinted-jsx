@@ -22,6 +22,11 @@ function Component({
     ...others
   }), test.interpolation([test.createElement``("p", {
     a: "a",
-    b: test.interpolation(Math.random() < .5)
+    b: test.interpolation(test.interpolation(Math.random() < .5))
   })])));
+}
+
+function Interoplation() {
+  const f1 = test.createElement``(test.Fragment, null, "A", test.interpolation(first), "B");
+  const f2 = test.createElement``("div", null, "A", test.interpolation(second), "B");
 }

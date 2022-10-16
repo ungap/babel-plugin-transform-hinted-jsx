@@ -12,21 +12,6 @@ export default ({types: t}) => {
     );
   };
 
-  const fixSkippedJSXExpressionContainer = ({node: {children}}) => {
-    for (const node of children) {
-      if (node.type === 'JSXExpressionContainer')
-        JSXExpressionContainer({node});
-    }
-  };
-
-  function JSXExpressionContainer(path) {
-    const {expression} = path.node;
-    path.node.expression = t.callExpression(
-      toMemberExpression(interpolation()),
-      [expression]
-    );
-  }
-
   return {
     visitor: {
       Program: {
@@ -77,37 +62,46 @@ export default ({types: t}) => {
           }
         }
       },
-      JSXExpressionContainer,
-      JSXElement(path) {
-        if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
-          fixSkippedJSXExpressionContainer(path);
-          const openingPath = path.get('openingElement');
-          const attributes = openingPath.get('attributes');
-          const callExpr = t.callExpression(
-            toMemberExpression((pragma || 'React.createElement') + '``'),
-            [
-              getTag(openingPath),
-              attributes.length ?
-                t.objectExpression(attributes.reduce(accumulateAttribute, [])) :
-                t.nullLiteral(),
-              ...t.react.buildChildren(path.node),
-            ]
-          );
-          path.replaceWith(t.inherits(callExpr, path.node));
+      JSXExpressionContainer(path) {
+        const {expression} = path.node;
+
+        path.node.expression = t.callExpression(
+          toMemberExpression(interpolation()),
+          [expression]
+        );
+      },
+      JSXElement: {
+        exit(path) {
+          if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
+            const openingPath = path.get('openingElement');
+            const attributes = openingPath.get('attributes');
+            const callExpr = t.callExpression(
+              toMemberExpression((pragma || 'React.createElement') + '``'),
+              [
+                getTag(openingPath),
+                attributes.length ?
+                  t.objectExpression(attributes.reduce(accumulateAttribute, [])) :
+                  t.nullLiteral(),
+                ...t.react.buildChildren(path.node),
+              ]
+            );
+            path.replaceWith(t.inherits(callExpr, path.node));
+          }
         }
       },
-      JSXFragment(path) {
-        if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
-          fixSkippedJSXExpressionContainer(path);
-          const callExpr = t.callExpression(
-            toMemberExpression((pragma || 'React.createElement') + '``'),
-            [
-              toMemberExpression(pragmaFrag || 'React.Fragment'),
-              t.nullLiteral(),
-              ...t.react.buildChildren(path.node)
-            ]
-          );
-          path.replaceWith(t.inherits(callExpr, path.node));
+      JSXFragment: {
+        exit(path) {
+          if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
+            const callExpr = t.callExpression(
+              toMemberExpression((pragma || 'React.createElement') + '``'),
+              [
+                toMemberExpression(pragmaFrag || 'React.Fragment'),
+                t.nullLiteral(),
+                ...t.react.buildChildren(path.node)
+              ]
+            );
+            path.replaceWith(t.inherits(callExpr, path.node));
+          }
         }
       }
     }

@@ -16,3 +16,21 @@ function Component({ className, props, others }) {
     </>
   );
 }
+
+function Interoplation() {
+  const f1 = (
+    <>
+      A
+      {first}
+      B
+    </>
+  );
+
+  const f2 = (
+    <div>
+      A
+      {second}
+      B
+    </div>
+  );
+}
