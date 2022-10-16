@@ -127,17 +127,15 @@ export default ({types: t}) => {
       return array;
     }
 
-    const value = convertAttributeValue(
-      attribute.node.name.name !== "key"
-        ? attribute.node.value || t.booleanLiteral(true)
-        : attribute.node.value,
-    );
-
-    if (attribute.node.name.name === "key" && value === null) {
+    if (attribute.node.name.name === "key" && attribute.node.value === null) {
       throw attribute.buildCodeFrameError(
         'Please provide an explicit key value. Using "key" as a shorthand for "key={true}" is not allowed.',
       );
     }
+
+    const value = t.isJSXExpressionContainer(attribute.node.value)
+      ? attribute.node.value.expression
+      : attribute.node.value || t.booleanLiteral(true);
 
     if (
       t.isStringLiteral(value) &&
@@ -168,15 +166,6 @@ export default ({types: t}) => {
       ),
     );
     return array;
-  }
-
-  function convertAttributeValue(node) {
-    return t.isJSXExpressionContainer(node) ?
-      t.callExpression(
-        toMemberExpression(interpolation()),
-        [node.expression]
-      ) :
-      node;
   }
 
   function convertJSXIdentifier(node, parent) {

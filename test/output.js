@@ -22,7 +22,7 @@ function Component({
     ...others
   }), test.interpolation([test.createElement``("p", {
     a: "a",
-    b: test.interpolation(test.interpolation(Math.random() < .5))
+    b: test.interpolation(Math.random() < .5)
   })])));
 }
 
