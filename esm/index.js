@@ -12,6 +12,8 @@ export default ({types: t}) => {
     );
   };
 
+  const transformedJSXContainers = new WeakSet();
+
   return {
     visitor: {
       Program(path, state) {
@@ -30,12 +32,13 @@ export default ({types: t}) => {
         }
 
         path.traverse({
-          JSXExpressionContainer(path) {
-            const {expression} = path.node;
+          JSXExpressionContainer({ node }) {
+            if (transformedJSXContainers.has(node)) return;
+            transformedJSXContainers.add(node);
 
-            path.node.expression = t.callExpression(
+            node.expression = t.callExpression(
               toMemberExpression(interpolation()),
-              [expression]
+              [node.expression]
             );
           },
           JSXElement: {
