@@ -13,39 +13,70 @@ module.exports = ({types: t}) => {
     );
   };
 
-  const fixSkippedJSXExpressionContainer = ({node: {children}}) => {
-    for (const node of children) {
-      if (node.type === 'JSXExpressionContainer')
-        JSXExpressionContainer({node});
-    }
-  };
-
-  function JSXExpressionContainer(path) {
-    const {expression} = path.node;
-    path.node.expression = t.callExpression(
-      toMemberExpression(interpolation()),
-      [expression]
-    );
-  }
+  const transformedJSXContainers = new WeakSet();
 
   return {
     visitor: {
-      Program: {
-        enter(_, state) {
-          const {file: {ast: {comments}}} = state;
-          if (comments) {
-            for (const comment of comments) {
-              if (JSX_ANNOTATION_REGEX.test(comment.value)) {
-                pragma = RegExp.$1;
-                [pragmaPrefix] = pragma.split('.');
-              }
-              else if (JSX_FRAG_ANNOTATION_REGEX.test(comment.value))
-                pragmaFrag = RegExp.$1;
-              else if (JSX_INTERPOLATION_ANNOTATION_REGEX.test(comment.value))
-                pragmaInterpolation = RegExp.$1;
+      Program(path, state) {
+        const {file: {ast: {comments}}} = state;
+        if (comments) {
+          for (const comment of comments) {
+            if (JSX_ANNOTATION_REGEX.test(comment.value)) {
+              pragma = RegExp.$1;
+              [pragmaPrefix] = pragma.split('.');
             }
+            else if (JSX_FRAG_ANNOTATION_REGEX.test(comment.value))
+              pragmaFrag = RegExp.$1;
+            else if (JSX_INTERPOLATION_ANNOTATION_REGEX.test(comment.value))
+              pragmaInterpolation = RegExp.$1;
           }
         }
+
+        path.traverse({
+          JSXExpressionContainer({ node }) {
+            if (transformedJSXContainers.has(node)) return;
+            transformedJSXContainers.add(node);
+
+            node.expression = t.callExpression(
+              toMemberExpression(interpolation()),
+              [node.expression]
+            );
+          },
+          JSXElement: {
+            exit(path) {
+              if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
+                const openingPath = path.get('openingElement');
+                const attributes = openingPath.get('attributes');
+                const callExpr = t.callExpression(
+                  toMemberExpression((pragma || 'React.createElement') + '``'),
+                  [
+                    getTag(openingPath),
+                    attributes.length ?
+                      t.objectExpression(attributes.reduce(accumulateAttribute, [])) :
+                      t.nullLiteral(),
+                    ...t.react.buildChildren(path.node),
+                  ]
+                );
+                path.replaceWith(t.inherits(callExpr, path.node));
+              }
+            }
+          },
+          JSXFragment: {
+            exit(path) {
+              if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
+                const callExpr = t.callExpression(
+                  toMemberExpression((pragma || 'React.createElement') + '``'),
+                  [
+                    toMemberExpression(pragmaFrag || 'React.Fragment'),
+                    t.nullLiteral(),
+                    ...t.react.buildChildren(path.node)
+                  ]
+                );
+                path.replaceWith(t.inherits(callExpr, path.node));
+              }
+            }
+          }
+        })
       },
       FunctionDeclaration(path) {
         if (path.node.id.name === '_extends' && path.parentPath.type === 'Program') {
@@ -76,39 +107,6 @@ module.exports = ({types: t}) => {
               )
             );
           }
-        }
-      },
-      JSXExpressionContainer,
-      JSXElement(path) {
-        if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
-          fixSkippedJSXExpressionContainer(path);
-          const openingPath = path.get('openingElement');
-          const attributes = openingPath.get('attributes');
-          const callExpr = t.callExpression(
-            toMemberExpression((pragma || 'React.createElement') + '``'),
-            [
-              getTag(openingPath),
-              attributes.length ?
-                t.objectExpression(attributes.reduce(accumulateAttribute, [])) :
-                t.nullLiteral(),
-              ...t.react.buildChildren(path.node),
-            ]
-          );
-          path.replaceWith(t.inherits(callExpr, path.node));
-        }
-      },
-      JSXFragment(path) {
-        if (!path.parentPath.isJSX() && !path.parentPath.isCallExpression()) {
-          fixSkippedJSXExpressionContainer(path);
-          const callExpr = t.callExpression(
-            toMemberExpression((pragma || 'React.createElement') + '``'),
-            [
-              toMemberExpression(pragmaFrag || 'React.Fragment'),
-              t.nullLiteral(),
-              ...t.react.buildChildren(path.node)
-            ]
-          );
-          path.replaceWith(t.inherits(callExpr, path.node));
         }
       }
     }
