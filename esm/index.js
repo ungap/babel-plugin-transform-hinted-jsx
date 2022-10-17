@@ -1,8 +1,13 @@
+import _pluginJSX from "@babel/plugin-transform-react-jsx";
+// _pluginJSX.default when using native ESM;
+// _pluginJSX when using the version compiled by ascjs.
+const pluginJSX = _pluginJSX.default || _pluginJSX;
+
 const JSX_ANNOTATION_REGEX = /\*?\s*@jsx\s+([^\s]+)/;
 const JSX_FRAG_ANNOTATION_REGEX = /\*?\s*@jsxFrag\s+([^\s]+)/;
 const JSX_INTERPOLATION_ANNOTATION_REGEX = /\*?\s*@jsxInterpolation\s+([^\s]+)/;
 
-export default ({types: t}) => {
+export default ({types: t}, options) => {
   let pragma = '', pragmaFrag = '', pragmaPrefix = '', pragmaInterpolation = '';
 
   const interpolation = () => {
@@ -27,7 +32,11 @@ export default ({types: t}) => {
     );
   }
 
+  // Force the JSX plugin to use object spread instead of _extends.
+  options.useSpread = true;
+
   return {
+    inherits: pluginJSX,
     visitor: {
       Program: {
         enter(_, state) {
