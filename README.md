@@ -35,20 +35,23 @@ const div = (
 );
 
 // becomes
-const div = React.createElement``(
-  'div',
-  null,
+var _token = {},
+    _token2 = {};
+
+const div = React.createElement(
+  "div",
+  {__token: _token},
   React.createElement(
-    'p',
+    "p",
     {
-      className: 'static',
+      className: "static",
       runtime: React.interpolation('prop')
     }
   ),
   React.interpolation(
-    React.createElement``(
-      'p',
-      null
+    React.createElement(
+      "p",
+      {__token: _token2}
     )
   )
 );

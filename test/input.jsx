@@ -1,4 +1,6 @@
-/** @jsx test.createElement *//** @jsxFrag test.Fragment *//** @jsxInterpolation test.interpolation */
+/** @jsx a.b.c.d.createElement */
+/** @jsxFrag a.b.c.d.Fragment */
+/** @jsxInterpolation a.b.c.d.interpolation */
 
 function Component({ className, props, others }) {
   return (
