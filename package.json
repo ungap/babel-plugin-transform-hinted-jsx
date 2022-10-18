@@ -1,6 +1,6 @@
 {
   "name": "@ungap/babel-plugin-transform-hinted-jsx",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "main": "./cjs/index.js",
   "scripts": {
     "build": "npm run cjs && npm run test",
