@@ -1,5 +1,13 @@
 # @ungap/babel-plugin-transform-hinted-jsx
 
+## Highly Experimental
+
+If you are using this already, consider changes soon due [the discussion around current ESX proposal](https://es.discourse.group/t/proposal-esx-as-core-js-feature/1511/43).
+
+Feel free to keep an eye on [udomsay](https://github.com/WebReflection/udomsay) as that will be the implementation reference for consumers.
+
+- - -
+
 This plugin is [a follow up of this post](https://webreflection.medium.com/jsx-is-inefficient-by-default-but-d1122c992399) and it can be used in place of [@babel/plugin-transform-react-jsx](https://www.npmjs.com/package/@babel/plugin-transform-react-jsx).
 
 A huge thanks to [Nicolò Ribaudo](https://twitter.com/NicoloRibaudo) for helping out.
